@@ -1,16 +1,78 @@
 <!DOCTYPE html>
-
 <html>
-
 <head>
-	<link rel="stylesheet" href="styles.css">
+  <style>
+    /* Style the game container */
+    #gameContainer {
+      width: 400px;
+      height: 400px;
+      display: grid;
+      grid-template-columns: repeat(40, 10px);
+      grid-template-rows: repeat(40, 10px);
+    }
+    /* Style the food */
+    .food {
+      background-color: red;
+    }
+    /* Style the snake body pixels */
+    .snakeBodyPixel {
+      background-color: green;
+    }
+    /* Style the score board */
+    .scoreBoard {
+      text-align: center;
+      font-size: 20px;
+    }
+  </style>
 </head>
-
 <body>
-	<!-- the entire body must be written by student -->
-    <script type="text/javascript" src="./script.js">
-</script>
+  <div id="gameContainer">
+    <!-- Create 40x40 pixels with unique IDs -->
+    <div id="pixel1" class=""></div>
+    <div id="pixel2" class=""></div>
+    ...
+    <div id="pixel1600" class=""></div>
+  </div>
+  <div class="scoreBoard">
+    Score: <span id="score">0</span>
+  </div>
+  <script>
+    // Initialize the game variables
+    const gameContainer = document.getElementById("gameContainer");
+    let snake = [{ row: 20, col: 0 }]; // Initialize snake at row 20, col 0
+    let food = { row: 0, col: 0 }; // Initialize food at an arbitrary location
+    let direction = "right"; // Initialize direction to right
+    let score = 0; // Initialize score to 0
+    let interval; // Initialize interval variable
 
-</body>
+    // Generate a random food location
+    function generateFood() {
+      food.row = Math.floor(Math.random() * 40);
+      food.col = Math.floor(Math.random() * 40);
+      // Check if the food is placed on top of the snake
+      for (let i = 0; i < snake.length; i++) {
+        if (food.row == snake[i].row && food.col == snake[i].col) {
+          // If it is, generate a new food location
+          generateFood();
+          return;
+        }
+      }
+      // Update the food pixel
+      const foodPixel = document.getElementById(`pixel${food.row * 40 + food.col + 1}`);
+      foodPixel.classList.add("food");
+    }
 
-</html>
+    // Move the snake
+    function moveSnake() {
+      // Clear the current snake pixels
+      for (let i = 0; i < snake.length; i++) {
+        const snakePixel = document.getElementById(`pixel${snake[i].row * 40 + snake[i].col + 1}`);
+        snakePixel.classList.remove("snakeBodyPixel");
+      }
+      // Calculate the new head position
+      const head = { ...snake[0] };
+      if (direction == "right") {
+        head.col++;
+      } else if (direction == "left") {
+        head.col--;
+      } else if (direction == "up") {
